@@ -95,6 +95,8 @@ function captureCode(outputs: BrowserOutputs): string {
   if (outputs.pageData)
     lines.push(
       "out.pageData = await tab.data();",
+      // Wait until the page's own requests settle: no new ones and none still waiting for a response.
+      "for (let quiet = 0, last = -1, i = 0; quiet < 2 && i < 16; i++) { const list = await tab.network.list({}); const n = list.length + 1000 * list.filter((c) => !c.status).length; quiet = n === last && n < 1000 ? quiet + 1 : 0; last = n; await new Promise((r) => setTimeout(r, 250)); }",
       "const calls = (await tab.network.list({})).filter((c) => c.json && c.status < 400).slice(-15);",
       "out.pageData.requests = [];",
       // A body can still be arriving when the page looks done: give each a moment.

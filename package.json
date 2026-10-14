@@ -1,6 +1,6 @@
 {
   "name": "browser-crawl",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Crawl anything, including behind logins: sitemaps and links, Markdown, JSON and page data, through your own browser or plain HTTP.",
   "type": "module",
   "license": "MIT",
