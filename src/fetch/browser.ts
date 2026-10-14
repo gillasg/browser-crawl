@@ -97,7 +97,8 @@ function captureCode(outputs: BrowserOutputs): string {
       "out.pageData = await tab.data();",
       "const calls = (await tab.network.list({})).filter((c) => c.json && c.status < 400).slice(-15);",
       "out.pageData.requests = [];",
-      "for (const c of calls) { try { out.pageData.requests.push({ url: c.url, method: c.method, json: await tab.network.body(c.id) }); } catch {} }",
+      // A body can still be arriving when the page looks done: give each a moment.
+      "for (const c of calls) { let json; for (let i = 0; i < 10 && json === undefined; i++) { try { json = await tab.network.body(c.id); } catch {} if (json === undefined) await new Promise((r) => setTimeout(r, 200)); } if (json !== undefined) out.pageData.requests.push({ url: c.url, method: c.method, json }); }",
     );
   if (outputs.screenshot)
     lines.push(
