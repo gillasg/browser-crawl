@@ -28,3 +28,5 @@ export {
 export { signature } from "./webhook.js";
 export { listJobs, pruneJobs, JobStore, crawlHome } from "./store.js";
 export { lineDiff } from "./cache.js";
+// Apps that drive a browser themselves can plug it in for every browser fetch.
+export { useBrowser, type Bridge } from "site-to-api";

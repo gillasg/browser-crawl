@@ -1,6 +1,6 @@
 {
   "name": "browser-crawl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Crawl anything, including behind logins: sitemaps and links, Markdown, JSON and page data, through your own browser or plain HTTP.",
   "type": "module",
   "license": "MIT",
@@ -50,7 +50,7 @@
     "linkedom": "0.18.13",
     "mammoth": "1.13.0",
     "pi-ai-login": "file:vendor/pi-ai-login-0.1.1.tgz",
-    "site-to-api": "file:vendor/site-to-api-0.1.0.tgz",
+    "site-to-api": "file:vendor/site-to-api-0.2.0.tgz",
     "turndown": "7.2.4",
     "turndown-plugin-gfm": "1.0.2",
     "unpdf": "1.8.1",

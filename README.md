@@ -27,7 +27,7 @@ const page = await scrape("https://shop.example/p/lamp", { formats: ["markdown",
 ## Requirements
 
 - Node.js 22.19 or newer.
-- For browser fetching: Chrome or Edge with the [Browser Use Extension](https://github.com/gillasg/browser-use-extension) (set up once with `npx browser-use-extension setup`). Without it, everything runs over plain HTTP.
+- For browser fetching: Chrome or Edge with the [Browser Use Extension](https://github.com/gillasg/browser-use-extension) (set up once with `npx browser-use-extension setup`). Without it, everything runs over plain HTTP. Apps that already drive a browser can use theirs instead: `useBrowser({ run, status, close })`, where `run(code, { session, timeoutMs })` runs browser code.
 
 ## Commands
 
