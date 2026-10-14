@@ -1,0 +1,13 @@
+packages:
+  - .
+# Provider SDK install scripts are not needed: everything runs from the published JavaScript.
+allowBuilds:
+  "@google/genai": false
+  protobufjs: false
+overrides:
+  pi-ai-login: file:vendor/pi-ai-login-0.1.1.tgz
+minimumReleaseAgeExclude:
+  - pi-ai-login
+  - site-to-api
+  - "@earendil-works/pi-ai@1.2.0"
+  - "@earendil-works/pi-telemetry@1.2.0"
