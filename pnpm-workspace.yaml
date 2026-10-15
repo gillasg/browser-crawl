@@ -4,8 +4,6 @@ packages:
 allowBuilds:
   "@google/genai": false
   protobufjs: false
-overrides:
-  pi-ai-login: file:vendor/pi-ai-login-0.1.1.tgz
 minimumReleaseAgeExclude:
   - pi-ai-login
   - site-to-api

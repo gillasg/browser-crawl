@@ -124,7 +124,7 @@ Every request needs `Authorization: Bearer <token>` (set it with `--token` or `B
 
 Webhooks: `{ "webhook": { "url": "...", "secret": "...", "events": ["page", "completed"] } }`. Each event is POSTed as JSON with `x-browser-crawl-event` and, with a secret, `x-browser-crawl-signature: sha256=<HMAC of the body>`.
 
-A `Dockerfile` runs the server with plain-HTTP fetching.
+A `Dockerfile` runs the server with plain-HTTP fetching. Build it from the parent folder, after `node scripts/link-repos.mjs`: `docker build -f browser-crawl/Dockerfile -t browser-crawl ..`
 
 ## Optional AI features
 
@@ -133,9 +133,12 @@ Crawling and CSS extraction never need a model. JSON extraction from a schema or
 ## Development
 
 ```bash
+node scripts/link-repos.mjs   # clones and builds the repos it links to, next to this one
 pnpm install
 pnpm check
 ```
+
+site-to-api and pi-ai-login come from sibling folders through live links (`link:../site-to-api`), so a change there is used here on the next build, with nothing copied or committed. `node scripts/link-repos.mjs --revisions` prints the revision of each linked repo.
 
 The end-to-end test drives a private, headless Chrome for Testing with the Browser Use Extension. It runs when it finds the extension (`BUE_DIR`, default `../browser-use-extension`) and Chrome (`CHROME_PATH`), and always in CI.
 
