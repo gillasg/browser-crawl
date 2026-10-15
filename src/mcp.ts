@@ -4,6 +4,7 @@ import { AutoFetcher } from "./fetch/auto.js";
 import { mapSite } from "./map.js";
 import { scrape } from "./scrape.js";
 import { searchAndScrape } from "./search.js";
+import { findList } from "./find.js";
 import type { CrawlOptions, PageResult } from "./types.js";
 
 // A stdio MCP server: scrape a page, map a site, crawl it, or search and read the results.
@@ -83,6 +84,26 @@ const TOOLS = [
     },
     annotations: { readOnlyHint: true },
   },
+  {
+    name: "find_list",
+    description:
+      "Build a list from the web: search Google in the user's browser, read each result, keep those that meet the criteria and fill in the columns, with the page each row came from. Needs a connected model.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        query: { type: "string" },
+        criteria: { type: "string", description: "What every row must be." },
+        columns: {
+          type: "object",
+          description: "Column name → what to fill in, e.g. {founded: 'year founded'}.",
+          additionalProperties: { type: "string" },
+        },
+        queries: { type: "array", items: { type: "string" }, description: "More searches." },
+      },
+      required: ["query", "columns"],
+    },
+    annotations: { readOnlyHint: true },
+  },
 ];
 
 function compact(page: PageResult): Json {
@@ -108,6 +129,12 @@ async function call(name: unknown, args: Json, fetcher: AutoFetcher): Promise<un
       limit: Number(args.limit ?? 5),
       fetcher,
       formats: ["markdown"],
+    });
+  if (name === "find_list")
+    return findList(String(args.query), {
+      columns: args.columns as Record<string, string>,
+      ...(typeof args.criteria === "string" ? { criteria: args.criteria } : {}),
+      ...(Array.isArray(args.queries) ? { queries: args.queries as string[] } : {}),
     });
   throw new Error(`Unknown tool ${String(name)}`);
 }

@@ -45,6 +45,9 @@ export interface FetchOptions {
   /** A Cookie header, or name → value. Static fetches use it; the browser has its own. */
   cookies?: string | Record<string, string>;
   auth?: { username: string; password: string };
+  /** Plain HTTP fetches go through this proxy (http://user:pass@host:port), for example to read a
+   *  site as seen from another country. Default: the BROWSER_CRAWL_PROXY environment variable. */
+  proxy?: string;
   /** Browser: language (Accept-Language and navigator) and location. */
   language?: string;
   location?: { latitude: number; longitude: number };

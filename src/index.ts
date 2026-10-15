@@ -4,6 +4,7 @@ export { scrape, buildResult, DEFAULT_FORMATS, type ScrapeContext } from "./scra
 export { Crawl, crawl, type CrawlHooks, type CrawlDeps } from "./crawler.js";
 export { mapSite, type MapOptions, type MappedUrl } from "./map.js";
 export { search, searchAndScrape, type SearchResult } from "./search.js";
+export { findList, type FindOptions, type FoundRow } from "./find.js";
 export { syncSite, type SyncReport } from "./sync.js";
 export { startServer, type CrawlServer, type ServerOptions } from "./server.js";
 export { runMcpServer } from "./mcp.js";

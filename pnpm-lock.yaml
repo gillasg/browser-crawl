@@ -31,6 +31,9 @@ importers:
       turndown-plugin-gfm:
         specifier: 1.0.2
         version: 1.0.2
+      undici:
+        specifier: 7.10.0
+        version: 7.10.0
       unpdf:
         specifier: 1.8.1
         version: 1.8.1
@@ -2109,6 +2112,13 @@ packages:
         integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==,
       }
 
+  undici@7.10.0:
+    resolution:
+      {
+        integrity: sha512-u5otvFBOBZvmdjWLVW+5DAc9Nkq8f24g0O9oY7qw2JVIF1VocIFoyz9JFkuVOS2j41AufeO0xnlweJ2RLT8nGw==,
+      }
+    engines: { node: ">=20.18.1" }
+
   unpdf@1.8.1:
     resolution:
       {
@@ -3637,6 +3647,8 @@ snapshots:
   underscore@1.13.8: {}
 
   undici-types@8.9.0: {}
+
+  undici@7.10.0: {}
 
   unpdf@1.8.1: {}
 

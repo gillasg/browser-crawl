@@ -1,4 +1,5 @@
 import { readSession, type SessionFile } from "site-to-api";
+import { fetch as proxiedFetch, ProxyAgent } from "undici";
 import type { ScrapeOptions } from "../types.js";
 import type { Fetched, Fetcher, Validators } from "./types.js";
 
@@ -66,20 +67,13 @@ export class StaticFetcher implements Fetcher {
   async fetch(input: string, options: ScrapeOptions, validators?: Validators): Promise<Fetched> {
     const url = new URL(input);
     const session = await this.session(url);
-    const headers: Record<string, string> = {
-      ...browserHeaders(url, options, session),
-      ...(options.headers ?? {}),
-    };
-    const cookie = cookieHeader(url, options, session);
-    if (cookie) headers.cookie = cookie;
-    if (options.auth)
-      headers.authorization =
-        "Basic " +
-        Buffer.from(`${options.auth.username}:${options.auth.password}`).toString("base64");
-    if (validators?.etag) headers["if-none-match"] = validators.etag;
-    if (validators?.lastModified) headers["if-modified-since"] = validators.lastModified;
-    const response = await fetch(url, {
+    const headers = requestHeaders(url, options, session, validators);
+    const proxy = options.proxy ?? process.env.BROWSER_CRAWL_PROXY;
+    // undici's own fetch, so the agent and the fetch are the same version.
+    const send = (proxy ? proxiedFetch : fetch) as typeof fetch;
+    const response = await send(url, {
       headers,
+      ...(proxy ? ({ dispatcher: proxyAgent(proxy) } as object) : {}),
       redirect: "follow",
       signal: AbortSignal.timeout(options.timeoutMs ?? 30_000),
     });
@@ -95,6 +89,35 @@ export class StaticFetcher implements Fetcher {
       ...(response.status === 304 ? { notModified: true } : {}),
     };
   }
+}
+
+function requestHeaders(
+  url: URL,
+  options: ScrapeOptions,
+  session: SessionFile | undefined,
+  validators: Validators | undefined,
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    ...browserHeaders(url, options, session),
+    ...(options.headers ?? {}),
+  };
+  const cookie = cookieHeader(url, options, session);
+  if (cookie) headers.cookie = cookie;
+  if (options.auth)
+    headers.authorization =
+      "Basic " +
+      Buffer.from(`${options.auth.username}:${options.auth.password}`).toString("base64");
+  if (validators?.etag) headers["if-none-match"] = validators.etag;
+  if (validators?.lastModified) headers["if-modified-since"] = validators.lastModified;
+  return headers;
+}
+
+const agents = new Map<string, ProxyAgent>();
+
+function proxyAgent(proxy: string): ProxyAgent {
+  let agent = agents.get(proxy);
+  if (!agent) agents.set(proxy, (agent = new ProxyAgent(proxy)));
+  return agent;
 }
 
 /** Fetches sitemaps and robots.txt the same way. */

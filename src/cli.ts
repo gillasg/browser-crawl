@@ -10,6 +10,7 @@ import { mapSite } from "./map.js";
 import { writeOutput } from "./output.js";
 import { scrape } from "./scrape.js";
 import { search, searchAndScrape } from "./search.js";
+import { findList } from "./find.js";
 import { startServer } from "./server.js";
 import { listJobs, JobStore } from "./store.js";
 import { syncSite } from "./sync.js";
@@ -28,6 +29,8 @@ const usage = `browser-crawl: crawl anything, including behind your logins.
   crawl --resume <job id or state dir>   continue a paused or interrupted crawl
   sync <url> <folder>        keep a Markdown mirror up to date (only changed pages are fetched)
   search "<query>"           Google in your browser [--scrape] [--limit n]
+  find "<query>"             build a list: search, keep matches, fill columns (needs a model)
+                             --columns "name,founded=year founded" [--criteria text] [--also "q2|q3"]
   schema <url> "<what>"      write a reusable CSS extraction schema from one page (needs a model)
   jobs                       list crawls
   serve                      REST job server [--port n] [--host h] [--token t]
@@ -90,6 +93,9 @@ const SKIP = new Set([
   "token",
   "search",
   "scrape",
+  "columns",
+  "criteria",
+  "also",
   "extract",
 ]);
 
@@ -245,6 +251,22 @@ const COMMANDS: Record<string, (positional: string[], flags: Flags) => Promise<v
         2,
       ),
     );
+  },
+  find: async (positional, flags) => {
+    const columns = Object.fromEntries(
+      String(flags.columns ?? "name")
+        .split(",")
+        .map((column) => {
+          const [name = "", what] = column.split("=", 2);
+          return [name.trim(), (what ?? name).trim()];
+        }),
+    );
+    const rows = await findList(positional.slice(1).join(" "), {
+      columns,
+      ...(typeof flags.criteria === "string" ? { criteria: flags.criteria } : {}),
+      ...(typeof flags.also === "string" ? { queries: flags.also.split("|") } : {}),
+    });
+    out(JSON.stringify(rows, null, 2));
   },
   schema: async (positional) => {
     const [, url, description] = positional;

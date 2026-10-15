@@ -164,7 +164,7 @@ test("MCP: scrape, map and crawl tools over stdio", async (t) => {
   const { result } = await request("tools/list");
   assert.deepEqual(
     result.tools.map((tool) => tool.name),
-    ["scrape", "map", "crawl", "search"],
+    ["scrape", "map", "crawl", "search", "find_list"],
   );
   const page = await request("tools/call", {
     name: "scrape",

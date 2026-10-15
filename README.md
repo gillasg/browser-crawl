@@ -31,20 +31,23 @@ const page = await scrape("https://shop.example/p/lamp", { formats: ["markdown",
 
 ## Commands
 
-| Command                          | What it does                                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `scrape <url>`                   | One page in any formats.                                                                          |
-| `map <url>`                      | A fast list of a site's URLs from its sitemaps and links. `--search` ranks them by a phrase.      |
-| `crawl <url>`                    | A whole site, or the part you choose. Ctrl+C pauses; `--resume` continues.                        |
-| `crawl --prompt "<request>"`     | Describe the crawl in plain English (needs a model).                                              |
-| `crawl --api <site>:<operation>` | Every item of a paginated operation of a site mapped with site-to-api.                            |
-| `sync <url> <folder>`            | A Markdown mirror that only re-fetches pages that changed and removes pages that are gone.        |
-| `search "<query>"`               | Google in your browser (your region and language). `--scrape` reads the results too.              |
-| `schema <url> "<what>"`          | Writes a CSS extraction schema from one page (needs a model), to reuse with `--css` and no model. |
-| `jobs`                           | Lists crawls.                                                                                     |
-| `serve`                          | The REST job server.                                                                              |
-| `mcp`                            | A stdio MCP server with `scrape`, `map`, `crawl` and `search` tools.                              |
-| `login`                          | Connects an AI model for the optional features.                                                   |
+| Command                          | What it does                                                                                                           |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `scrape <url>`                   | One page in any formats.                                                                                               |
+| `map <url>`                      | A fast list of a site's URLs from its sitemaps and links. `--search` ranks them by a phrase.                           |
+| `crawl <url>`                    | A whole site, or the part you choose. Ctrl+C pauses; `--resume` continues.                                             |
+| `crawl --prompt "<request>"`     | Describe the crawl in plain English (needs a model).                                                                   |
+| `crawl --api <site>:<operation>` | Every item of a paginated operation of a site mapped with site-to-api.                                                 |
+| `sync <url> <folder>`            | A Markdown mirror that only re-fetches pages that changed and removes pages that are gone.                             |
+| `search "<query>"`               | Google in your browser (your region and language). `--scrape` reads the results too.                                   |
+| `find "<query>"`                 | Build a list: search, keep results that meet `--criteria`, fill `--columns name,founded=year founded` (needs a model). |
+| `schema <url> "<what>"`          | Writes a CSS extraction schema from one page (needs a model), to reuse with `--css` and no model.                      |
+| `jobs`                           | Lists crawls.                                                                                                          |
+| `serve`                          | The REST job server.                                                                                                   |
+| `mcp`                            | A stdio MCP server with `scrape`, `map`, `crawl` and `search` tools.                                                   |
+| `login`                          | Connects an AI model for the optional features.                                                                        |
+
+Pages fetched in the browser include the content of open shadow roots (web components) and same-origin iframes.
 
 ## Choosing pages
 
@@ -62,18 +65,19 @@ const page = await scrape("https://shop.example/p/lamp", { formats: ["markdown",
 
 ## Fetching
 
-| Option                                              | Meaning                                                                                                |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `--render auto\|static\|browser`                    | `auto` (default) uses plain HTTP and switches to the browser when a page needs it.                     |
-| `--wait-until networkidle`, `--wait-for <selector>` | Wait for the page to finish loading, or for an element.                                                |
-| `--scroll infinite`                                 | Scroll until no new content appears (infinite feeds, lazy loading).                                    |
-| `--expand`                                          | Click "show more" and "read more" first.                                                               |
-| actions (library and API)                           | Click, write, press, scroll, wait, run JavaScript, take screenshots, in order.                         |
-| `--block-resources image,media,font`                | Load pages faster in the browser.                                                                      |
-| `--mobile`, `--language hi-IN`                      | Fetch as a phone, or in another language.                                                              |
-| `--cookies`, `--header`, HTTP auth                  | For plain fetches. Cookies exported with `site-to-api session <site>` are used automatically.          |
-| `--max-age <ms>`                                    | Use the cached copy when it is this fresh. Otherwise pages are re-checked with ETag and Last-Modified. |
-| `--concurrency`, `--delay-ms`, `--retries`          | Throughput. Concurrency also drops by itself when memory runs short.                                   |
+| Option                                              | Meaning                                                                                                               |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `--render auto\|static\|browser`                    | `auto` (default) uses plain HTTP and switches to the browser when a page needs it.                                    |
+| `--wait-until networkidle`, `--wait-for <selector>` | Wait for the page to finish loading, or for an element.                                                               |
+| `--scroll infinite`                                 | Scroll until no new content appears (infinite feeds, lazy loading).                                                   |
+| `--expand`                                          | Click "show more" and "read more" first.                                                                              |
+| actions (library and API)                           | Click, write, press, scroll, wait, run JavaScript, take screenshots, in order.                                        |
+| `--block-resources image,media,font`                | Load pages faster in the browser.                                                                                     |
+| `--mobile`, `--language hi-IN`                      | Fetch as a phone, or in another language.                                                                             |
+| `--cookies`, `--header`, HTTP auth                  | For plain fetches. Cookies exported with `site-to-api session <site>` are used automatically.                         |
+| `proxy` option, `BROWSER_CRAWL_PROXY`               | Send plain fetches through your proxy (`http://user:pass@host:port`), for example to see a site from another country. |
+| `--max-age <ms>`                                    | Use the cached copy when it is this fresh. Otherwise pages are re-checked with ETag and Last-Modified.                |
+| `--concurrency`, `--delay-ms`, `--retries`          | Throughput. Concurrency also drops by itself when memory runs short.                                                  |
 
 ## Formats
 
