@@ -1,4 +1,4 @@
-import { sharedBridge, type Bridge } from "site-to-api";
+import { sharedBridge, type Bridge } from "../bridge.js";
 import type { Action, ScrapeOptions } from "../types.js";
 import type { Fetched, Fetcher } from "./types.js";
 import { flattenedHtml } from "./flatten.js";

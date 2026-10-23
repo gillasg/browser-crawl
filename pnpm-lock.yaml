@@ -19,12 +19,6 @@ importers:
       mammoth:
         specifier: 1.13.0
         version: 1.13.0
-      pi-ai-login:
-        specifier: link:../pi-ai-login
-        version: link:../pi-ai-login
-      site-to-api:
-        specifier: link:../site-to-api
-        version: link:../site-to-api
       turndown:
         specifier: 7.2.4
         version: 7.2.4

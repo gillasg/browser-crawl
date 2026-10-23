@@ -23,11 +23,13 @@ export {
   summarize,
   generateCssSchema,
   optionsFromPrompt,
-  connectModel,
+  requireModel,
   type ModelLike,
 } from "./extract/model.js";
 export { signature } from "./webhook.js";
 export { listJobs, pruneJobs, JobStore, crawlHome } from "./store.js";
 export { lineDiff } from "./cache.js";
 // Apps that drive a browser themselves can plug it in for every browser fetch.
-export { useBrowser, type Bridge } from "site-to-api";
+export { useBrowser, type Bridge } from "./bridge.js";
+// Hosts with site-to-api installed plug it in to read mapped sites through their API.
+export { useSiteApi, type SiteApiAdapter } from "./fetch/site-api.js";

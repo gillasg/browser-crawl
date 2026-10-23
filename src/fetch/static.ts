@@ -1,4 +1,5 @@
-import { readSession, type SessionFile } from "site-to-api";
+import { readSession } from "../registry.js";
+import type { SessionFile } from "../session.js";
 import { fetch as proxiedFetch, ProxyAgent } from "undici";
 import type { ScrapeOptions } from "../types.js";
 import type { Fetched, Fetcher, Validators } from "./types.js";

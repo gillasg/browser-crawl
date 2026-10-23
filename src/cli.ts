@@ -2,7 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { closeSharedBridge } from "site-to-api";
+import { closeSharedBridge } from "./bridge.js";
 import { Crawl, type CrawlHooks } from "./crawler.js";
 import { generateCssSchema, optionsFromPrompt } from "./extract/model.js";
 import { AutoFetcher } from "./fetch/auto.js";
@@ -35,7 +35,6 @@ const usage = `browser-crawl: crawl anything, including behind your logins.
   jobs                       list crawls
   serve                      REST job server [--port n] [--host h] [--token t]
   mcp                        stdio MCP server
-  login                      connect an AI model (optional features)
 
 Common options: --render, --formats, --wait-for <selector>, --scroll infinite, --expand, --mobile,
 --language hi-IN, --cookies "a=1; b=2", --header "Name: value", --max-age <ms>, --modified-since <date>,
@@ -293,12 +292,6 @@ const COMMANDS: Record<string, (positional: string[], flags: Flags) => Promise<v
     await new Promise(() => undefined);
   },
   mcp: () => runMcpServer(),
-  login: async () => {
-    const login = await import("pi-ai-login");
-    await login.login({
-      onUrl: (url) => out(`Opening the sign-in page… If nothing opens, visit:\n${url}`),
-    });
-  },
 };
 
 async function main(argv: string[]): Promise<number> {

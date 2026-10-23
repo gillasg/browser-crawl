@@ -2,7 +2,7 @@ import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
 import TurndownService from "turndown";
 import { gfm } from "turndown-plugin-gfm";
-import { extractEmbedded } from "site-to-api";
+import { extractEmbedded } from "../extract/embedded.js";
 
 // Turning a page's HTML into the formats people ask for: Markdown (whole page or main content),
 // cleaned HTML, text, links, images, metadata, tables, embedded data and product records.

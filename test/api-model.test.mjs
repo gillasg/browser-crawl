@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { saveFlow, rebuild, siteName } from "site-to-api";
 import {
   crawl,
   scrape,
+  useSiteApi,
   extractJson,
   summarize,
   optionsFromPrompt,
@@ -13,52 +13,28 @@ import {
 import { startCrawlSite } from "./fixture-site.mjs";
 import { fakeAuto, tempHome } from "./helpers.mjs";
 
-/** Records the fixture's catalog API and product pages as HAR, the way a browser would. */
-async function recordShop(origin) {
-  const entries = [];
-  let clock = Date.parse("2026-10-01T10:00:00Z");
-  const get = async (path, type) => {
-    const response = await fetch(origin + path);
-    const text = await response.text();
-    entries.push({
-      startedDateTime: new Date((clock += 1000)).toISOString(),
-      _resourceType: type,
-      request: {
-        method: "GET",
-        url: origin + path,
-        headers: [{ name: "referer", value: origin + "/" }],
-      },
-      response: {
-        status: response.status,
-        headers: [...response.headers].map(([name, value]) => ({ name, value })),
-        content: { mimeType: response.headers.get("content-type"), text },
-      },
-    });
-    return text;
-  };
-  const first = JSON.parse(await get("/api/catalog?limit=5", "fetch"));
-  await get(`/api/catalog?limit=5&cursor=${first.nextCursor}`, "fetch");
-  for (const slug of ["oak-desk", "office-chair", "green-sofa"])
-    await get(`/product/${slug}`, "document");
-  return { log: { entries } };
-}
-
-test("crawling through a mapped API: every item of a paginated operation, and pages as data", async (t) => {
+test("a mapped API adapter: every item of a paginated operation, and pages as data", async (t) => {
   await tempHome(t);
   const site = await startCrawlSite();
   t.after(() => site.close());
-  const name = siteName(site.origin);
-  await saveFlow(
-    name,
-    { name: "shop", recordedAt: new Date().toISOString() },
-    await recordShop(site.origin),
-  );
-  const { model } = await rebuild(name);
-  const operation = model.operations.find((op) => op.path === "/api/catalog");
-  assert.equal(operation.pagination.style, "cursor");
+  const name = "shop.example";
+  useSiteApi({
+    siteName: () => name,
+    loadModel: async () => ({
+      pages: [{ id: "product", origin: site.origin, path: "/product/{slug}", extractor: "jsonld" }],
+    }),
+    siteApi: async () => ({
+      fetchPage: async (_id, params) => ({ jsonLd: [{ name: params?.slug }] }),
+      paginate: async function* () {
+        for (let i = 0; i < 17; i++) yield { name: `Item ${i}` };
+      },
+    }),
+    isBrowserNotConnected: () => false,
+  });
+  t.after(() => useSiteApi(undefined));
   const { fetcher } = fakeAuto();
   const items = await crawl(
-    { api: { site: name, operation: operation.id }, limit: 100 },
+    { api: { site: name, operation: "listItems" }, limit: 100 },
     { fetcher },
   );
   assert.equal(items.length, 17);

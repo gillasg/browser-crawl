@@ -1,6 +1,6 @@
 # browser-crawl
 
-**Crawl anything, including behind your logins.** Turn a site into Markdown, JSON or a dataset: plain HTTP where it works, your own browser where a page needs JavaScript or a sign-in, and a site's own API when it has been mapped with [site-to-api](https://github.com/gillasg/site-to-api).
+**Crawl anything, including behind your logins.** Turn a site into Markdown, JSON or a dataset: plain HTTP where it works, your own browser where a page needs JavaScript or a sign-in, and a site's own API when a host has mapped it with site-to-api.
 
 ```bash
 npx browser-crawl crawl https://docs.example.com --limit 200 --out docs/
@@ -37,7 +37,7 @@ const page = await scrape("https://shop.example/p/lamp", { formats: ["markdown",
 | `map <url>`                      | A fast list of a site's URLs from its sitemaps and links. `--search` ranks them by a phrase.                           |
 | `crawl <url>`                    | A whole site, or the part you choose. Ctrl+C pauses; `--resume` continues.                                             |
 | `crawl --prompt "<request>"`     | Describe the crawl in plain English (needs a model).                                                                   |
-| `crawl --api <site>:<operation>` | Every item of a paginated operation of a site mapped with site-to-api.                                                 |
+| `crawl --api <site>:<operation>` | Every item of a paginated operation of a site mapped with site-to-api (needs a host that installs the adapter).                    |
 | `sync <url> <folder>`            | A Markdown mirror that only re-fetches pages that changed and removes pages that are gone.                             |
 | `search "<query>"`               | Google in your browser (your region and language). `--scrape` reads the results too.                                   |
 | `find "<query>"`                 | Build a list: search, keep results that meet `--criteria`, fill `--columns name,founded=year founded` (needs a model). |
@@ -45,7 +45,6 @@ const page = await scrape("https://shop.example/p/lamp", { formats: ["markdown",
 | `jobs`                           | Lists crawls.                                                                                                          |
 | `serve`                          | The REST job server.                                                                                                   |
 | `mcp`                            | A stdio MCP server with `scrape`, `map`, `crawl` and `search` tools.                                                   |
-| `login`                          | Connects an AI model for the optional features.                                                                        |
 
 Pages fetched in the browser include the content of open shadow roots (web components) and same-origin iframes.
 
@@ -128,11 +127,11 @@ Every request needs `Authorization: Bearer <token>` (set it with `--token` or `B
 
 Webhooks: `{ "webhook": { "url": "...", "secret": "...", "events": ["page", "completed"] } }`. Each event is POSTed as JSON with `x-browser-crawl-event` and, with a secret, `x-browser-crawl-signature: sha256=<HMAC of the body>`.
 
-A `Dockerfile` runs the server with plain-HTTP fetching. Build it from the parent folder, after `node scripts/link-repos.mjs`: `docker build -f browser-crawl/Dockerfile -t browser-crawl ..`
+A `Dockerfile` runs the server with plain-HTTP fetching. Build it from this folder: `docker build -f Dockerfile -t browser-crawl .`
 
 ## Optional AI features
 
-Crawling and CSS extraction never need a model. JSON extraction from a schema or prompt, summaries, schema writing and plain-English crawl requests use the model you connected with `npx browser-crawl login`: Claude, ChatGPT, GitHub Copilot, or an API key from many providers. The sign-in is shared with Pi and every app built on it.
+Crawling and CSS extraction never need a model. JSON extraction from a schema or prompt, summaries, schema writing and plain-English crawl requests take a model from the caller: the library, server and MCP accept a `ModelLike` (`{ complete(context) }`). Nothing in browser-crawl signs in or picks one for you.
 
 ## Development
 
@@ -142,7 +141,7 @@ pnpm install
 pnpm check
 ```
 
-site-to-api and pi-ai-login come from sibling folders through live links (`link:../site-to-api`), so a change there is used here on the next build, with nothing copied or committed. `node scripts/link-repos.mjs --revisions` prints the revision of each linked repo.
+browser-crawl has no sibling packages: a change here is committed only here. `node scripts/link-repos.mjs --revisions` prints the revision of each linked repo.
 
 The end-to-end test drives a private, headless Chrome for Testing with the Browser Use Extension. It runs when it finds the extension (`BUE_DIR`, default `../browser-use-extension`) and Chrome (`CHROME_PATH`), and always in CI.
 

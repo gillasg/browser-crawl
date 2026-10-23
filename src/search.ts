@@ -1,4 +1,4 @@
-import { sharedBridge, type Bridge } from "site-to-api";
+import { sharedBridge, type Bridge } from "./bridge.js";
 import { AutoFetcher } from "./fetch/auto.js";
 import { scrape } from "./scrape.js";
 import type { PageResult, ScrapeOptions } from "./types.js";
