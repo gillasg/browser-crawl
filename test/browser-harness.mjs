@@ -35,7 +35,7 @@ export async function launchBrowser(t) {
   const bridge = spawn(process.execPath, [bueCli, "serve"], { env, stdio: "ignore" });
   let chrome;
   t.after(async () => {
-    const { closeSharedBridge } = await import("site-to-api");
+    const { closeSharedBridge } = await import("../dist/bridge.js");
     await closeSharedBridge();
     chrome?.kill();
     bridge.kill();
